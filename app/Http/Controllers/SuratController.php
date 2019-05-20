@@ -31,6 +31,7 @@ class SuratController extends Controller
                 ->orWhere('perihal', 'LIKE', "%$keyword%")
                 ->orWhere('tipe', 'LIKE', "%$keyword%")
                 ->orWhere('user_id', 'LIKE', "%$keyword%")
+                ->orWhere('filename', 'LIKE', "%$keyword%")
                 ->paginate($perPage);
         } else {
             $surat = Surat::paginate($perPage);
@@ -59,6 +60,7 @@ class SuratController extends Controller
      */
     public function store(Request $request)
     {
+        
         $validation = [
             'no_surat' => 'required',
             'jenis_surat_id' => 'required',
@@ -66,20 +68,38 @@ class SuratController extends Controller
             'tipe' => 'required',
             'pengirim' => 'required',
             'perihal' => 'required',
+            'file' => 'required|file|max:2000',
         ];
 
         if ($request->tipe == 'masuk') {
             $validation = array_add($validation, 'tanggal_terima', 'required');
         }
+        $uploadedFile = $request->file('file');        
+        $path = $uploadedFile->store('public/files');
 
         $request->validate($validation);
-
+        
         $requestData = array_add($request->all(), 'user_id', $request->user()->id);
         $requestData = array_add($requestData, 'no_agenda', Surat::whereTipe($request->tipe)->count()+1);
+        $requestData = array_add($requestData, 'filename', $path);
         
+        
+        /*
+        $file = Surat::create([
+            'user_id' => $request->user()->id,
+            //'no_agenda' => $agenda,
+            'no_surat' => $request->no_surat ?? $uploadedFile->getClientOriginalName(),
+            'filename' => $path
+            'jenis_surat_id' => 'required',
+            'tanggal_kirim' => 'required',
+            'tipe' => 'required',
+            'pengirim' => 'required',
+            'perihal' => 'required',
+        ]);
+        */
         Surat::create($requestData);
 
-        return redirect('surat')->with('flash_message', 'Surat added!');
+        return redirect('surat')->with('flash_message', 'Surat telah ditambahkan!');
     }
 
     /**
@@ -155,7 +175,7 @@ class SuratController extends Controller
     public function destroy($id)
     {
         Surat::destroy($id);
-
+        //Surat::delete('public/files/'.$filename->file);
         return redirect('surat')->with('flash_message', 'Surat deleted!');
     }
 
@@ -173,5 +193,22 @@ class SuratController extends Controller
         $surats = Surat::whereTipe($tipe)-> whereDate('created_at', '>=', $from)->whereDate('created_at', '<=', $to)->get();
 
         return view('surat.laporan', compact('surats','from','to','tipe'));
+    }
+
+    public function upload(Request $request): RedirectResponse
+    {
+        $this->validate($request, [
+            'title' => 'nullable|max:100',
+            'file' => 'required|file|max:2000'
+        ]);
+        $uploadedFile = $request->file('file');        
+        $path = $uploadedFile->store('public/files');
+        $file = File::create([
+            'title' => $request->title ?? $uploadedFile->getClientOriginalName(),
+            'filename' => $path
+        ]);
+        return redirect()
+            ->back()
+            ->withSuccess(sprintf('File %s has been uploaded.', $file->title)); 
     }
 }

@@ -24,6 +24,7 @@ class CreateSuratsTable extends Migration
             $table->string('perihal');
             $table->enum('tipe', ['masuk','keluar']);
             $table->integer('user_id')->unsigned();
+            $table->string('filename', 100)->nullable();
             $table->timestamps();
             $table->softDeletes();
             

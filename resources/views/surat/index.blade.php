@@ -39,6 +39,7 @@
                                         <th>Pengirim</th>
                                         <th>Perihal</th>
                                         <th>Tipe</th>
+                                        <th>File</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -54,6 +55,8 @@
                                         <td>{{ $item->pengirim }}</td>
                                         <td>{{ $item->perihal }}</td>
                                         <td>Surat {{ $item->tipe }}</td>
+                                        <td><a href="{{ Storage::url($item->filename) }}" target="_blank">Lihat Surat</a></td>
+                                        
                                         <td>
                                             <a href="{{ url('/surat/' . $item->id . '/edit') }}" title="Edit Surat"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button></a>
                                             {!! Form::open([

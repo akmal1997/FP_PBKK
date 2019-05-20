@@ -58,7 +58,13 @@
         {!! $errors->first('perihal', '<p class="help-block">:message</p>') !!}
     </div>
 </div>
-
+{{ csrf_field() }}
+{{ method_field('post') }}
+<div class="form-group {{ !$errors->has('filename') ?: 'has-error' }}">
+    {!! Form::label('filename', 'File', ['class' => 'col-md-4 control-label']) !!}
+                            <input type="file" name="file">
+                            <span class="help-block text-danger">{{ $errors->first('file') }}</span>
+                        </div>
 <div class="form-group">
     <div class="col-md-offset-4 col-md-4">
         {!! Form::submit(isset($submitButtonText) ? $submitButtonText : 'Create', ['class' => 'btn btn-primary']) !!}
