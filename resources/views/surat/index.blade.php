@@ -58,7 +58,9 @@
                                         <td><a href="{{ Storage::url($item->filename) }}" target="_blank">Lihat Surat</a></td>
                                         
                                         <td>
+                                            <!--
                                             <a href="{{ url('/surat/' . $item->id . '/edit') }}" title="Edit Surat"><button class="btn btn-primary btn-xs"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Edit</button></a>
+                                            -->
                                             {!! Form::open([
                                                 'method'=>'DELETE',
                                                 'url' => ['/surat', $item->id],
